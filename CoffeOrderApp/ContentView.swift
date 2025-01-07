@@ -8,17 +8,40 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+    
+    @EnvironmentObject private var model : CoffeModel
+    @State private var isLoading  : Bool = false
+    
+    
+    func populateOrders() async{
+        do{
+            try await model.populateOrders()
+        }catch let error{
+            print(error)
         }
+    }
+    
+    var body: some View {
+        ZStack{
+            VStack {
+                List(model.orders){ order in
+                    OrderCellView(order: order)
+                }.task {
+                    isLoading = true
+                    await populateOrders()
+                    isLoading = false
+                }.listStyle(.plain)
+            }
+            if isLoading{ 
+                ProgressView()
+            }
+        }
+        
         .padding()
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView().environmentObject(CoffeModel(webservice: Webservice()))
 }
+
