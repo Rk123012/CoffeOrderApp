@@ -11,7 +11,7 @@ struct ContentView: View {
     
     @EnvironmentObject private var model : CoffeModel
     @State private var isLoading  : Bool = false
-    
+    @State private var isPresented : Bool = false
     
     func populateOrders() async{
         do{
@@ -20,44 +20,45 @@ struct ContentView: View {
             print(error)
         }
     }
-    
-    func placeOrder() async{
-        do{
-            let order = Order(name: "jony", coffeeName: "suo", total: 12.0, size: .large)
-            try await model.placeOrder(order: order)
-        }catch let error{
-            print(error)     
-        }
-    }
       
     var body: some View {
-        ZStack{
-            VStack {
-                if model.orders.isEmpty{
-                    Text("No Orders available!").accessibilityIdentifier("noOrdersText")
-                }
-                List(model.orders){ order in
-                    OrderCellView(order: order)
+        NavigationStack{
+            ZStack{
+                VStack {
+                    if model.orders.isEmpty{
+                        Text("No Orders available!").accessibilityIdentifier("noOrdersText")
+                    }
+                    List(model.orders){ order in
+                        OrderCellView(order: order)
+                    }.listStyle(.plain)
+                
                 }.task {
                     isLoading = true
                     await populateOrders()
                     isLoading = false
-                }.listStyle(.plain)
-            
+                }
+                .sheet(isPresented: $isPresented, content: {
+                    AddOrder()
+                })
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Add new Order"){
+                            isPresented = true
+                        }
+                    }
+                }
+                if isLoading{
+                    ProgressView()
+                }
             }
-            if isLoading{ 
-                ProgressView()
-            }  
-        }.task {
-            await placeOrder()
+            .padding()
         }
         
-        .padding()
     }
 }
 
 #Preview {
-    var config = Configuration()
+    var config = Configuration()  
     ContentView().environmentObject(CoffeModel(webservice: Webservice(baseUrl: config.environment.baseURL)))
 }
 

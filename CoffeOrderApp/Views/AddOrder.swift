@@ -18,7 +18,8 @@ class AddOrderErrors{
 
 
 struct AddOrder: View {
-    
+    @EnvironmentObject private var model : CoffeModel
+    @Environment(\.dismiss) private var dismiss
     @State private var name : String = ""
     @State private var coffeeName : String = ""
     @State private var total : String = ""
@@ -50,64 +51,79 @@ struct AddOrder: View {
     }
     
     
+    private func placeOrder() async {
+        let order = Order(name: name, coffeeName: coffeeName, total: Double(total) ?? 0, size: size)
+        do{
+            try await model.placeOrder(order: order)
+            dismiss()
+        }catch let error{
+            print(error)
+        }
+    }
+    
     var body: some View {
-        VStack{
-            TextField("Name", text: $name)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+        NavigationStack{
             
-            Text(errors.name)
-                .labelsVisibility(errors.name.isEmpty ? .hidden : .visible)
-                .foregroundStyle(.red)
-                .font(.caption)
-                .leftAligned()
+            VStack{
+                TextField("Name", text: $name)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                
+                Text(errors.name)
+                    .labelsVisibility(errors.name.isEmpty ? .hidden : .visible)
+                    .foregroundStyle(.red)
+                    .font(.caption)
+                    .leftAligned()
+                
+                
+                
+                TextField("Coffee Name", text: $coffeeName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                Text(errors.coffeeName)
+                    .labelsVisibility(errors.coffeeName.isEmpty ? .hidden : .visible)
+                    .foregroundStyle(.red)
+                    .font(.caption)
+                    .leftAligned()
+                
+                
+                
+                
+                TextField("Total", text: $total)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                
+                Text(errors.total)
+                    .labelsVisibility(errors.total.isEmpty ? .hidden : .visible)
+                    .foregroundStyle(.red)
+                    .font(.caption)
+                    .leftAligned()
+                
+                
+                
+                Picker("Select Size", selection: $size){
+                    Text("Small").tag(CoffeSize.small)
+                    Text("Small").tag(CoffeSize.medium)
+                    Text("Small").tag(CoffeSize.large)
+                }.pickerStyle(.segmented)
+                
+                Spacer().frame(height: 20)
+                
+                Button("Add Order"){
+                    if isValid{
+                        Task{
+                            await placeOrder()
+                        }
+                    }
+                }.buttonStyle(.bordered)
+                    .background(Color.blue)
+                    .foregroundStyle(.white)
+                    .cornerRadius(10)
+                
+                
+                Spacer()
+                
+            }.padding(.horizontal, 20)
+                .navigationTitle("Add Order")
             
-            
-            
-            TextField("Coffee Name", text: $coffeeName)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            Text(errors.coffeeName)
-                .labelsVisibility(errors.coffeeName.isEmpty ? .hidden : .visible)
-                .foregroundStyle(.red)
-                .font(.caption)
-                .leftAligned()
-            
-            
-            
-            
-            TextField("Total", text: $total)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            
-            Text(errors.total)
-                .labelsVisibility(errors.total.isEmpty ? .hidden : .visible)
-                .foregroundStyle(.red)
-                .font(.caption)
-                .leftAligned()
-            
-            
-            
-            Picker("Select Size", selection: $size){
-                Text("Small").tag(CoffeSize.small)
-                Text("Small").tag(CoffeSize.medium)
-                Text("Small").tag(CoffeSize.large)
-            }.pickerStyle(.segmented)
-            
-            Spacer().frame(height: 20)
-            
-            Button("Add Order"){
-                if isValid{
-                    
-                }
-            }.buttonStyle(.bordered)
-                .background(Color.blue)
-                .foregroundStyle(.white)
-                .cornerRadius(10)
-            
-           
-            Spacer()
-            
-        }.padding(.horizontal, 20)
-        
-        
+        }
     }
 }
 
