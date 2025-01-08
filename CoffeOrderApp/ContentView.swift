@@ -20,6 +20,21 @@ struct ContentView: View {
             print(error)
         }
     }
+    
+    private func deleteOrder(_ indexSet : IndexSet) {
+        indexSet.forEach { index in
+            let order = model.orders[index]
+            guard let orderId = order.id else { return }
+            Task {
+                do{
+                    try await model.deleteOrder(orderId: orderId)
+                }catch let error{
+                    print(error)
+                }  
+            }
+            
+        }
+    }
       
     var body: some View {
         NavigationStack{
@@ -28,8 +43,10 @@ struct ContentView: View {
                     if model.orders.isEmpty{
                         Text("No Orders available!").accessibilityIdentifier("noOrdersText")
                     }
-                    List(model.orders){ order in
-                        OrderCellView(order: order)
+                    List{
+                        ForEach(model.orders){ order in
+                            OrderCellView(order: order)
+                        }.onDelete(perform: deleteOrder)
                     }.listStyle(.plain)
                 
                 }.task {
@@ -38,7 +55,7 @@ struct ContentView: View {
                     isLoading = false
                 }
                 .sheet(isPresented: $isPresented, content: {
-                    AddOrder()
+                    AddOrderView()
                 })
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {

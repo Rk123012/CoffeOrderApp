@@ -17,7 +17,7 @@ class AddOrderErrors{
 
 
 
-struct AddOrder: View {
+struct AddOrderView: View {
     @EnvironmentObject private var model : CoffeModel
     @Environment(\.dismiss) private var dismiss
     @State private var name : String = ""
@@ -100,8 +100,8 @@ struct AddOrder: View {
                 
                 Picker("Select Size", selection: $size){
                     Text("Small").tag(CoffeSize.small)
-                    Text("Small").tag(CoffeSize.medium)
-                    Text("Small").tag(CoffeSize.large)
+                    Text("Medium").tag(CoffeSize.medium)
+                    Text("Large").tag(CoffeSize.large)
                 }.pickerStyle(.segmented)
                 
                 Spacer().frame(height: 20)
@@ -128,5 +128,5 @@ struct AddOrder: View {
 }
 
 #Preview {
-    AddOrder()
+    AddOrderView()
 }
