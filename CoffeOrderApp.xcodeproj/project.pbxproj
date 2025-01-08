@@ -21,9 +21,23 @@
 		503451F52D2D2DFB0030B847 /* CoffeOrderAppE2ETest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoffeOrderAppE2ETest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		503753322D2E998200995571 /* Exceptions for "CoffeOrderApp" folder in "CoffeOrderAppE2ETest" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Extensions/View+Extensions.swift",
+				Views/AddOrder.swift,
+			);
+			target = 503451F42D2D2DFB0030B847 /* CoffeOrderAppE2ETest */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		503451CE2D2CFD3D0030B847 /* CoffeOrderApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				503753322D2E998200995571 /* Exceptions for "CoffeOrderApp" folder in "CoffeOrderAppE2ETest" target */,
+			);
 			path = CoffeOrderApp;
 			sourceTree = "<group>";
 		};

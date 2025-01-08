@@ -20,6 +20,15 @@ struct ContentView: View {
             print(error)
         }
     }
+    
+    func placeOrder() async{
+        do{
+            let order = Order(name: "jony", coffeeName: "suo", total: 12.0, size: .large)
+            try await model.placeOrder(order: order)
+        }catch let error{
+            print(error)     
+        }
+    }
       
     var body: some View {
         ZStack{
@@ -38,7 +47,9 @@ struct ContentView: View {
             }
             if isLoading{ 
                 ProgressView()
-            }
+            }  
+        }.task {
+            await placeOrder()
         }
         
         .padding()

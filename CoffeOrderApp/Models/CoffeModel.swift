@@ -21,5 +21,11 @@ class CoffeModel: ObservableObject {
     func populateOrders() async throws {
         orders = try await webservice.getOrders()
     }
+    func placeOrder(order : Order) async throws {
+        let placedOrder = try await webservice.placeOrder(order: order)
+        if placedOrder.id != nil {
+            orders.append(placedOrder)
+        }
+    }
     
 }
