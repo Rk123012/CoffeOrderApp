@@ -33,4 +33,9 @@ class CoffeModel: ObservableObject {
         orders = orders.filter({$0.id != deletedOrder.id})
     }
     
+    func updateOrder(order : Order) async throws {
+        let updatedOrder = try await webservice.updateOrder(order: order)
+        orders = orders.map({order.id == $0.id ? updatedOrder : $0})
+    }
+    
 }
