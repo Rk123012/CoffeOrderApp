@@ -20,10 +20,13 @@ struct ContentView: View {
             print(error)
         }
     }
-    
+      
     var body: some View {
         ZStack{
             VStack {
+                if model.orders.isEmpty{
+                    Text("No Orders available!").accessibilityIdentifier("noOrdersText")
+                }
                 List(model.orders){ order in
                     OrderCellView(order: order)
                 }.task {
@@ -31,6 +34,7 @@ struct ContentView: View {
                     await populateOrders()
                     isLoading = false
                 }.listStyle(.plain)
+            
             }
             if isLoading{ 
                 ProgressView()
@@ -42,6 +46,7 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView().environmentObject(CoffeModel(webservice: Webservice()))
+    var config = Configuration()
+    ContentView().environmentObject(CoffeModel(webservice: Webservice(baseUrl: config.environment.baseURL)))
 }
 
