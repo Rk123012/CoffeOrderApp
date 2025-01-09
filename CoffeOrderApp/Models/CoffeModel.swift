@@ -38,4 +38,10 @@ class CoffeModel: ObservableObject {
         orders = orders.map({order.id == $0.id ? updatedOrder : $0})
     }
     
+    func getOrder(orderId : Int) -> Order? {
+        guard let order = orders.first(where: {$0.id == orderId}) else  {
+            return nil
+        }
+        return order
+    }
 }

@@ -43,9 +43,15 @@ struct ContentView: View {
                     if model.orders.isEmpty{
                         Text("No Orders available!").accessibilityIdentifier("noOrdersText")
                     }
+                
                     List{
                         ForEach(model.orders){ order in
-                            OrderCellView(order: order)
+                            ZStack{
+                                OrderCellView(order: order)
+                                NavigationLink(value: order.id){
+                                }.opacity(0.0)
+                            }
+                            
                         }.onDelete(perform: deleteOrder)
                     }.listStyle(.plain)
                 
@@ -63,6 +69,9 @@ struct ContentView: View {
                             isPresented = true
                         }
                     }
+                }
+                .navigationDestination(for: Int.self) { orderId in
+                    OrderDetailsView(orderId: orderId)
                 }
                 if isLoading{
                     ProgressView()
