@@ -14,6 +14,8 @@ struct OrderDetailsView: View {
     
     let orderId : Int
     
+    @State private var isUptingOrder : Bool = false
+    
     @Environment(\.dismiss) private var dismiss
     
     private func deleteOrder() async {
@@ -23,7 +25,7 @@ struct OrderDetailsView: View {
             print(error)
         }
     }
-    
+
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -36,18 +38,30 @@ struct OrderDetailsView: View {
                 
                 Text("total : \(order.total)")
                 
-                Button("Delete", role: .destructive) {
-                    Task {
-                        await deleteOrder()
-                        dismiss()
-                    }
+                HStack{
+                    Spacer()
+                    Button("Delete", role: .destructive) {
+                        Task {
+                            await deleteOrder()
+                            dismiss()
+                        }
+                    }.buttonStyle(.bordered)
+                    
+                    Button("Update"){
+                        isUptingOrder = true
+                    }.buttonStyle(.bordered)
+                    Spacer()
                 }
+                
                     
                 
                 Spacer()
             }
         }.leftAligned()
             .padding(.leading, 20)
+            .sheet(isPresented: $isUptingOrder) {
+                AddOrUpdateOrderView(orderId: orderId)
+            }
     }
 }
 

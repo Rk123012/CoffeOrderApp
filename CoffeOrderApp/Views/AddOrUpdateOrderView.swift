@@ -17,15 +17,16 @@ class AddOrderErrors{
 
 
 
-struct AddOrderView: View {
+struct AddOrUpdateOrderView: View {
     @EnvironmentObject private var model : CoffeModel
     @Environment(\.dismiss) private var dismiss
+    
+    var orderId : Int? = nil
     @State private var name : String = ""
     @State private var coffeeName : String = ""
     @State private var total : String = ""
     @State private var size : CoffeSize = .small
     @State private var errors : AddOrderErrors = AddOrderErrors()
-    
     
     
     var isValid : Bool{
@@ -50,11 +51,37 @@ struct AddOrderView: View {
         return errors.name.isEmpty && errors.coffeeName.isEmpty && errors.total.isEmpty
     }
     
+    func mapPreviousOrder(){
+        if let id = orderId, let order = model.getOrder(orderId: id){
+            self.name = order.name
+            self.coffeeName = order.coffeeName
+            self.total = String(order.total)
+            self.size = order.size
+        }
+    }
+    
+    func saveOrUpdateOrder() async{
+        if let _ = orderId{
+            await updateOrder()
+        }else{
+            await placeOrder()
+        }
+    }
     
     private func placeOrder() async {
         let order = Order(name: name, coffeeName: coffeeName, total: Double(total) ?? 0, size: size)
         do{
             try await model.placeOrder(order: order)
+            dismiss()
+        }catch let error{
+            print(error)
+        }
+    }
+    
+    private func updateOrder() async{
+        let editedOrder = Order(id: orderId ?? 0, name: name, coffeeName: coffeeName, total: Double(total) ?? 0, size: size)
+        do{
+            try await model.updateOrder(order: editedOrder)
             dismiss()
         }catch let error{
             print(error)
@@ -106,10 +133,10 @@ struct AddOrderView: View {
                 
                 Spacer().frame(height: 20)
                 
-                Button("Add Order"){
+                Button(orderId == nil ? "Add Order" : "Update Order"){
                     if isValid{
                         Task{
-                            await placeOrder()
+                            await saveOrUpdateOrder()
                         }
                     }
                 }.buttonStyle(.bordered)
@@ -121,12 +148,17 @@ struct AddOrderView: View {
                 Spacer()
                 
             }.padding(.horizontal, 20)
-                .navigationTitle("Add Order")
+                .navigationTitle(orderId != nil ? "Update Order" : "Add Order")
+                .onAppear{
+                    if let _ = orderId{
+                        mapPreviousOrder()
+                    }
+                }
             
         }
     }
 }
 
 #Preview {
-    AddOrderView()
+    AddOrUpdateOrderView()
 }

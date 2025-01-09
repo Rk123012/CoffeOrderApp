@@ -26,7 +26,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"Extensions/View+Extensions.swift",
-				Views/AddOrderView.swift,
+				Views/AddOrUpdateOrderView.swift,
 				Views/OrderDetailsView.swift,
 			);
 			target = 503451F42D2D2DFB0030B847 /* CoffeOrderAppE2ETest */;
